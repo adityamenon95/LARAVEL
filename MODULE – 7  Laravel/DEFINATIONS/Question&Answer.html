@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    
+
+    <title>How to do config database in laravel</title>
+</head>
+
+<body>
+    <div class="container mt-5">
+        
+<h1>MODULE 8 (LaraveL)</h1>   
+
+<h1 class="text-center">How to pass Multiple Variable in route? </h1>
+<li>
+    <p>I often find myself working with routes that require multiple parameters. For instance, let's reconsider our example from before. Say we need to go through a post's category to access it. We now need to pass two parameters, the category slug and the post slug.</p>
+</li>
+<li>
+    <p>To achieve this, I first need to define the route in the routes/web.php file. To create a route that accepts multiple parameters, I can simply add them within curly braces {}. That looks something like this:</p> 
+</li>
+
+<li>
+    <p>// routes/web.php
+        Route::name('categories.posts.show')
+        ->get('/categories/{category}/posts/{post}', 'PostController@show');
+    These two arguments category and post will now be passed to the show method in the PostController.<p>
+
+    <p>Let's say I want to generate a URL containing these parameters. In that case, I can use the route() helper function in Laravel to do so:
+    
+    $url = route('example.show', [
+        'category' => 'example-category',
+        'post' => 'example-post'
+    ]);</p> 
+</li>
+<li>
+    <p>This will generate the URL /categories/example-category/posts/example-post.</p> 
+</li>
+<li>
+    <p>Once I have the route in place, I need to handle the parameters in my controller's show method. To access them, I simply add them as arguments to the method:
+
+        class PostController extends Controller
+        {
+              public function show(string $category, string $post)
+            {
+                // $category - 'example-category'
+                // $post - 'example-post'
+            }
+        }</p> 
+</li>
+<li>
+    <p>>Now, I can use these parameters within my show method. This enables me to retrieve relevant data based on the category and post values, or even modify the application's behaviour depending upon their content.
+
+To summarise, working with multiple parameters in Laravel routes allows me to efficiently pass data between different parts of my application. By clearly defining routes and utilising the appropriate helper functions, I can ensure a seamless experience when handling multiple data points like id and name within my Laravel application</p> 
+</li>
+
+<h1 class="text-center">How to pass variable which can be null in Route? </h1>
+<li>
+    <p>In Laravel, you can allow null values for route parameters by following these approaches:
+
+ <p>Optional Parameters: Define optional parameters in your route definition by wrapping the parameter name in curly braces {} and appending a ? after it. For example:
+        PHP
+        
+        Route::get('/user/{name?}', function ($name = null) {
+            // Handle null or blank $name
+        });
+        
+        Hidden Input Fields: If you need to pass null values from a form, use hidden input fields. For instance:
+        HTML
+        
+        <form method="post" action="{{ route('admin.developers.admins.edit.post', ['admin' => $admin, 'dev_id' => null, 'id' => $id]) }}" autocomplete="off" novalidate>
+            <!-- Other form fields -->
+            <input type="hidden" value="anything" name="dev_id">
+        </form>
+    </p>  
+</li>
+
+<h1 class="text-center">In Employee Controller’s action Call Middleware.</h1>
+<li>
+    <p>Certainly! To call middleware within an action in Laravel, follow these steps:
+
+       <p>Register the Middleware: First, create your custom middleware or use an existing one. You can generate a new middleware using the following command:
+        php artisan make:middleware MyCustomMiddleware
+        This will create a new middleware file in the app/Http/Middleware directory.
+        Define the Middleware Logic: Open the newly created middleware file (MyCustomMiddleware.php) and implement the logic you want to execute. For example:
+        PHP</p>
+        
+        <?php
+        <p>
+        namespace App\Http\Middleware;
+        
+        use Closure;
+        
+        class MyCustomMiddleware
+        {
+            public function handle($request, Closure $next)
+            {
+                // Your middleware logic here
+                // For example, logging, authentication, etc.
+        
+                return $next($request);
+            }
+        }
+        </p>
+       <p> Use the Middleware in Your Controller Action: In your controller, specify the middleware you want to call within a specific action. For example:
+        PHP
+        
+        <?php
+        
+        namespace App\Http\Controllers;
+        
+        use Illuminate\Http\Request;
+        
+        class EmployeeController extends Controller
+        {
+            public function myAction(Request $request)
+            {
+                // Call your middleware
+                $response = app(MyCustomMiddleware::class)->handle($request, function ($request) {
+                    // Your action logic here
+                    // For example, fetching employee data
+        
+                    return response('Employee data retrieved successfully');
+                });
+        
+                return $response;
+            }
+        }</p>
+        
+        <p>Assign Middleware to Routes: Finally, don’t forget to assign your middleware to specific routes in the routes/web.php file:
+        PHP</p>
+        
+        <p>Route::get('/employees', 'EmployeeController@myAction')->middleware('my-custom-middleware');
+        Replace 'my-custom-middleware' with the actual name of your middleware.
+        That’s it! Your middleware will be executed when the myAction method is called. Adjust the middleware logic and route as needed for your specific use case. </p> 
+</li>
+
+<h1 class="text-center"> How to remove route caching? </h1>
+
+<li>
+    <p>To remove route caching in Laravel, follow these steps:
+
+        Clear Route Cache: Run the following command to clear the cached routes:
+        php artisan route:clear
+        This will remove the cached routes file (usually located at bootstrap/cache/routes.php).
+        Update Routes: If you’ve made changes to your routes, ensure that you upload the updated routes.php file to your server after clearing the cache.</p> 
+</li>
+
+<h1 class="text-center">Create Custom Macro For search User </h1>
+<li>
+    <p>Certainly! Let’s create a custom macro in Laravel that allows you to search for users (or any other model) based on specific attributes. Macros are a powerful way to extend Laravel’s functionality. Here’s how you can build a search macro:
+
+        Open AppServiceProvider: In your App\Providers\AppServiceProvider, add the following code within the boot method:
+        PHP</p>
+        
+       <p>use Illuminate\Database\Eloquent\Builder;
+        
+        Builder::macro('search', function (string $attribute, string $searchTerm) {
+            return $this->where($attribute, 'LIKE', "%{$searchTerm}%");
+        });
+        This simple macro allows you to search for a single column (attribute) in your model.
+        Usage: Now you can use the search macro on any model. For example:
+        Searching a single column (e.g., name):
+        PHP</p>
+        
+        <p>User::search('name', $searchTerm)->get();
+        
+        Searching on multiple columns in one go:
+        PHP
+        
+        </p>
+        <p>User::query()
+            ->search('name', 'John')
+            ->search('email', 'example@example.com')
+            ->get();
+        
+        Adjust the attribute names and search terms according to your specific use case.</p> 
+</li>
+
